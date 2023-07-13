@@ -40,7 +40,3 @@ axes[1, 1].set_title('分段线性变换直方图')
 axes[1, 1].set_xlabel('灰度值')
 axes[1, 1].set_ylabel('像素数量')
 plt.show()
-
-
-
-
