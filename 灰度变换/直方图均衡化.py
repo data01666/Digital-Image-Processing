@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -34,10 +28,3 @@ axes[1, 1].set_title('直方图均衡化直方图')
 axes[1, 1].set_xlabel('灰度值')
 axes[1, 1].set_ylabel('像素数量')
 plt.show()
-
-
-# In[ ]:
-
-
-
-
