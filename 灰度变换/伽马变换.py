@@ -18,8 +18,3 @@ axes[0].set_title('原图')
 axes[1].imshow(gamma_transformed, cmap='gray')
 axes[1].set_title('伽马变换')
 plt.show()
-
-
-
-
-
