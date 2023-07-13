@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,4 +18,3 @@ axes[0].set_title('原图')
 axes[1].imshow(log_transformed, cmap='gray')
 axes[1].set_title('对数变换')
 plt.show()
-
