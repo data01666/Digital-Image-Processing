@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,8 +19,6 @@ axes[1].imshow(gamma_transformed, cmap='gray')
 axes[1].set_title('伽马变换')
 plt.show()
 
-
-# In[ ]:
 
 
 
