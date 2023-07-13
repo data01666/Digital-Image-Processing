@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import cv2
 import matplotlib.pyplot as plt
 plt.rcParams['font.family']='SimHei'
@@ -21,4 +15,3 @@ axes[0].set_title('原图')
 axes[1].imshow(inverted_image, cmap='gray')
 axes[1].set_title('反色变换')
 plt.show()
-
