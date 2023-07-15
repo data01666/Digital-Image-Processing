@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -31,4 +25,3 @@ axs[1, 1].imshow(magnitude, cmap='gray')
 axs[1, 1].set_title('梯度图像')
 plt.tight_layout()
 plt.show()
-
