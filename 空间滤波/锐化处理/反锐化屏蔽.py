@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -33,4 +27,3 @@ axs[1].set_title('差值图像')
 axs[2].imshow(sharpened, cmap='gray')
 axs[2].set_title('反锐化屏蔽')
 plt.show()
-
