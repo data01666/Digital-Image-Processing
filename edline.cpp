@@ -1,6 +1,5 @@
-#include "EDLines.h"
+#include "edlines.h"
 #include <fstream>
-
 using namespace cv;
 using namespace std;
 
@@ -926,30 +925,33 @@ int EDLines::ComputeMinLineLength() {
 //-----------------------------------------------------------------
 // разбивает цепочку отрезков на линии
 //
-void EDLines::SplitSegment2Lines(double * x, double * y, int noPixels, int segmentNo)
-{
+void EDLines::SplitSegment2Lines(double *x, double *y, int noPixels, int segmentNo) {
 
-    // первый пиксель линии внутри сегмента
     int firstPixelIndex = 0;
 
+    // 当剩余像素数量大于等于最小线段长度时，开始分割
     while (noPixels >= min_line_len) {
-        // пытаемся создать линию минимальной длины
         bool valid = false;
         double lastA, lastB, error;
         int lastInvert;
 
+        std::vector<std::pair<double, double>> keyPoints;  // 用于存储关键点
+
         while (noPixels >= min_line_len) {
             LineFit(x, y, min_line_len, lastA, lastB, error, lastInvert);
-            if (error <= 0.5) { valid = true; break; }
+            if (error <= 0.5) {
+                valid = true;
+                break;
+            }
 
             noPixels -= 1;
             x += 1; y += 1;
             firstPixelIndex += 1;
         }
 
-        if (valid == false) return;
+        if (!valid) return;
 
-        // пытаемся удлинить линию
+        // 尝试延长线段
         int index = min_line_len;
         int len = min_line_len;
 
@@ -958,6 +960,8 @@ void EDLines::SplitSegment2Lines(double * x, double * y, int noPixels, int segme
             int lastGoodIndex = index - 1;
             int goodPixelCount = 0;
             int badPixelCount = 0;
+
+            // 检查是否可以继续延长线段
             while (index < noPixels) {
                 double d = ComputeMinDistance(x[index], y[index], lastA, lastB, lastInvert);
 
@@ -966,8 +970,12 @@ void EDLines::SplitSegment2Lines(double * x, double * y, int noPixels, int segme
                     goodPixelCount++;
                     badPixelCount = 0;
 
-                }
-                else {
+                    // 如果当前点与拟合线段的距离超过一定阈值，存储为关键点
+                    if (d > 0.3) {  // 这里设置一个较小的阈值用于筛选关键点
+                        keyPoints.push_back({x[index], y[index]});
+                    }
+
+                } else {
                     badPixelCount++;
                     if (badPixelCount >= 5) break;
                 }
@@ -982,7 +990,6 @@ void EDLines::SplitSegment2Lines(double * x, double * y, int noPixels, int segme
             }
 
             if (goodPixelCount < 2 || index >= noPixels) {
-                // завершаем линию, подсчитывем конечную точку
                 double sx, sy, ex, ey;
 
                 int index = 0;
@@ -994,8 +1001,13 @@ void EDLines::SplitSegment2Lines(double * x, double * y, int noPixels, int segme
                 while (ComputeMinDistance(x[index], y[index], lastA, lastB, lastInvert) > line_error) index--;
                 ComputeClosestPoint(x[index], y[index], lastA, lastB, lastInvert, ex, ey);
 
-                // добавляем линию в список
-                lines.push_back(LineSegment(lastA, lastB, lastInvert, sx, sy, ex, ey, segmentNo, firstPixelIndex + noSkippedPixels, index - noSkippedPixels + 1));
+                // 添加起点和终点为关键点
+                keyPoints.insert(keyPoints.begin(), {sx, sy});
+                keyPoints.push_back({ex, ey});
+
+                // 创建LineSegment对象并保存关键点
+                lines.push_back(LineSegment(lastA, lastB, lastInvert, sx, sy, ex, ey, segmentNo,
+                                            firstPixelIndex + noSkippedPixels, index - noSkippedPixels + 1, keyPoints));
                 linesNo++;
                 len = index + 1;
                 break;
@@ -1008,6 +1020,7 @@ void EDLines::SplitSegment2Lines(double * x, double * y, int noPixels, int segme
         firstPixelIndex += len;
     }
 }
+
 
 //------------------------------------------------------------------
 // Соединяем коллинеарные линии
@@ -1079,7 +1092,6 @@ void EDLines::JoinCollinearLines() {
     // 更新线段总数
     linesNo = lastLineIndex + 1;
 }
-
 
 
 
@@ -1569,14 +1581,12 @@ void EDLines::writeAllLineSegmentsToFile(const std::string &filename) {
 		outFile << "  First Pixel Index: " << line.firstPixelIndex << "\n";
 		outFile << "  Length (pixels): " << line.len << "\n";
 
-
 		// 写入线段的关键点信息
 		outFile << "  Key Points: ";
 		for (const auto& kp : line.keyPoints) {
 			outFile << "(" << kp.first << ", " << kp.second << ") ";
 		}
 		outFile << "\n\n";
-
 	}
 
 	// 关闭文件
